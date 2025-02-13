@@ -1,0 +1,32 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  workflow:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL}               # 日志级别(DEBUG/INFO/WARNING/ERROR/CRITICAL)
+      - LOG_DIR=${LOG_DIR}            # 日志存储目录
+      - LOG_FILE_SIZE=${LOG_FILE_SIZE}            # 单个日志文件大小(支持K/M/G单位)
+      - LOG_BACKUP_COUNT=${LOG_BACKUP_COUNT}           # 最大日志备份文件数
+      - LOG_DETAIL=${LOG_DETAIL}              # 是否显示详细日志格式
+      - API_TIMEOUT=${API_TIMEOUT}               # API调用超时时间(秒)
+    volumes:
+      - ./logs:${LOG_DIR}             # 挂载日志目录到宿主机
+    networks:
+      - agent-network
+
+  # 示例智能体服务（按需扩展）
+  # session-agent:
+  #   build: .
+  #   command: uvicorn tests.mock_agents.agents:SessionAgent.app --host 0.0.0.0 --port 8001
+  #   ports:
+  #     - "8001:8001"
+  #   networks:
+  #     - agent-network
+
+networks:
+  agent-network:
+    driver: bridge
